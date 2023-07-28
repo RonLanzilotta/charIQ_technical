@@ -1,10 +1,8 @@
-// declare variables for the API call
-const API_KEY = 'K0HTOOWI401WQMWH';
-const SYMBOL = 'IBM';
 // change this to be set dynamically by the user
 const API_URL = 'https://chartiq-api-8511c706644d.herokuapp.com/api/data'
 // Sets the Moving Average Interval to a default of 20, to be changed by the user based on input.
 let MOVING_AVERAGE_INTERVAL = document.getElementById("movingAvgInt").defaultValue = 20;
+let stockPriceData
 
 // select the chart element and its rendering context to enable drawn content
 // const chart = document.getElementById("chart")
@@ -25,7 +23,8 @@ async function fetchStockData() {
         const stockPrices = Object.entries(stockData).map(([date, values]) => {
             return { date, price: parseFloat(values['Close'])};
         })
-        console.log(stockPrices)
+        stockPriceData = stockPrices
+        console.log(stockPriceData)
 
         drawChart(stockPrices)
 
@@ -34,18 +33,18 @@ async function fetchStockData() {
     }
 }
 
-function handleMovingAvgIntUpdate() {
+function handleMovingAvgIntUpdate(stockPriceData) {
     const inputString = document.getElementById('movingAvgInt');
     const inputNum = parseInt(inputString.value)
 
     MOVING_AVERAGE_INTERVAL = inputNum;
-    fetchStockData()
+    drawChart(stockPriceData)
 }
 
 function drawChart(data) {
     // Ratio between the device's physical pixel resolution to the CSS pixel resolution
     const dpr = window.devicePixelRatio || 1;
-    const chart = document.getElementById("chart")
+    const chart = document.getElementById("lineChart")
     const ctx = chart.getContext("2d")
 
     // Increase the resolution of the chart
@@ -94,5 +93,8 @@ function drawChart(data) {
     }
     ctx.stroke();
 }
+
+// Creates an event listener on a click of the HTML button for changing the moving avg interval.
+document.getElementById("test").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
 
 fetchStockData()
