@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
-        <title>IBM 20 Day Moving Average</title>
-        <link rel="stylesheet" href="style.css">
+      <meta charset="utf-8" />
+      <title>IBM 20 Day Moving Average</title>
+      <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <h1>IBM Stocks</h1>
-        <canvas id="lineChart">current IBM 20 day moving average stock price</canvas>
-        <input 
+      <div class="stockContainer">
+        <div class="title">
+          <h1>IBM Stocks</h1>
+        </div>
+        <div class="chartContainer">
+          <div class="fullChartContainer">
+            <div class="chartYAxis"></div>
+            <canvas id="lineChart" class="lineChart">current IBM 20 day moving average stock price</canvas>
+            <div class="chartXAxis"></div>
+          </div>
+          <div class="chartParameterContainer">
+          <input 
             type="number" 
             id="movingAvgInt" 
             placeholder="Enter moving average interval"
             min="1"
             max="100"
-        >
-        <button id="test" 
-        >Change Moving Average Interval</button>
+          >
+          <button id="changeMovingAvgInt">Change Moving Average Interval</button>
+        </div>
+        </div>
+      </div>
         <script src="app.js" defer></script>
     </body>
 </html>
-
-<!-- onclick="handleMovingAvgIntUpdate()" -->

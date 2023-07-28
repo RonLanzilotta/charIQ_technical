@@ -26,6 +26,8 @@ async function fetchStockData() {
         stockPriceData = stockPrices
         console.log(stockPriceData)
 
+        console.log(stockPriceData.length)
+
         drawChart(stockPrices)
 
     } catch (error) {
@@ -56,6 +58,9 @@ function drawChart(data) {
     chart.style.width = chartWidth / dpr + 'px';
     chart.style.height = chartHeight / dpr + 'px';
 
+    document.querySelector(".fullChartContainer").style.width = `${chartWidth / dpr + 30}px`
+    document.querySelector(".chartXAxis").style.width = `${chartWidth / dpr + 30}px`
+    
     ctx.scale(dpr, dpr);
     // Create separate arrays to store the dates and prices for mapping and dom manipulation
     const dates = data.map(entry => entry.date);
@@ -69,17 +74,21 @@ function drawChart(data) {
         movingAverages.push(sum / MOVING_AVERAGE_INTERVAL);
     }
 
+
+
     // Clear the canvas
     ctx.clearRect(0, 0, chart.width, chart.height);
-    console.log(chart.width, chart.height)
+
+    const maxPrice = Math.max(...prices)
+    const adjustHeight = maxPrice * .2
 
     // Draw the stock price line chart
     ctx.beginPath();
     ctx.strokeStyle = 'blue';
     ctx.lineWidth = 0.75;
-    ctx.moveTo(0, chart.height - (prices[0] * chart.height / Math.max(...prices)) * .9);
+    ctx.moveTo(0, chartHeight + adjustHeight - (prices[0] * chartHeight / maxPrice));
     for (let i = 1; i < prices.length; i++) {
-        ctx.lineTo(i * chart.width / (prices.length - 1), chart.height - (prices[i] * chart.height / Math.max(...prices)) * .9);
+        ctx.lineTo(i * chartWidth / (prices.length - 1), chartHeight + adjustHeight - (prices[i] * chartHeight / maxPrice));
     }
     ctx.stroke();
 
@@ -87,14 +96,15 @@ function drawChart(data) {
     ctx.beginPath();
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 1;
-    ctx.moveTo(0, chart.height - (movingAverages[0] * chart.height / Math.max(...prices)) * .9);
+    ctx.moveTo(0, chartHeight + adjustHeight - (movingAverages[0] * chartHeight / maxPrice));
     for (let i = 1; i < movingAverages.length; i++) {
-        ctx.lineTo(i * chart.width / (movingAverages.length - 1), chart.height - (movingAverages[i] * chart.height / Math.max(...prices)) * .9);
+        ctx.lineTo(i * chartWidth / (movingAverages.length - 1), chartHeight + adjustHeight - (movingAverages[i] * chartHeight / maxPrice));
     }
     ctx.stroke();
 }
 
 // Creates an event listener on a click of the HTML button for changing the moving avg interval.
-document.getElementById("test").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
+document.getElementById("changeMovingAvgInt").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
+
 
 fetchStockData()

@@ -1,21 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
 }
 
-h1 {
-    margin-top: 30px;
+.stockContainer {
+    /* border: 2px solid red; */
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+.title {
+    padding: 20px;
+    text-decoration: underline;
+    font-size: 20px;
+    width: 100%;
+    font-weight: 600;
+}
+
+.chartContainer {
+    border: 2px solid red;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fullChartContainer {
+    border: 2px solid rgb(0, 255, 0);
+    display: grid;
+    grid-template-columns: 30px span;
+    grid-template-rows: span 100px;
+    grid-template-areas: 
+        "a b"
+        "c c";
+    align-items: start;
+    width: 100%;
+}
+
+.chartYAxis {
+    border: 2px solid red;
+    grid-area: a;
+    height: 100%;
+    width: 30px;
+}
+
+.lineChart {
+    border: 2px solid red;
+    grid-area: b;
+}
+
+.chartXAxis {
+    border: 2px solid rgb(60, 0, 255);
+    grid-area: c;
+    /* width: 100%; */
+    height: 30px;
+}
+
+/* 
 #lineChart {
+    display: block;
     width: 85%;
     max-width: 800px;
     height: 400px;
     margin: 10px auto;
     border: 3px solid black;
-    object-fit: contain
+    object-fit: contain;
+} */
+
+.chartParameterContainer {
+    border: 2px solid purple;
 }
 
 #movingAvgInt {
-    width: 160px;
+    width: 100px;
+    height: 30px;
+    border: 2px solid black;
+    padding-left: 5px;
 }
+
+#changeMovingAvgInt {
+    border: 2px solid black;
+    background: rgb(166, 220, 220);
+    padding: 5px;
+}
+
