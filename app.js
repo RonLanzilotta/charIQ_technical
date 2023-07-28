@@ -3,14 +3,12 @@ const API_KEY = 'K0HTOOWI401WQMWH';
 const SYMBOL = 'IBM';
 // change this to be set dynamically by the user
 const API_URL = 'https://chartiq-api-8511c706644d.herokuapp.com/api/data'
-
+// Sets the Moving Average Interval to a default of 20, to be changed by the user based on input.
 let MOVING_AVERAGE_INTERVAL = document.getElementById("movingAvgInt").defaultValue = 20;
-// let MOVING_AVERAGE_INTERVAL = 20;
 
-console.log(MOVING_AVERAGE_INTERVAL)
 // select the chart element and its rendering context to enable drawn content
-const chart = document.getElementById("chart")
-const ctx = chart.getContext("2d")
+// const chart = document.getElementById("chart")
+// const ctx = chart.getContext("2d")
 
 // API call
 async function fetchStockData() {
@@ -45,13 +43,27 @@ function handleMovingAvgIntUpdate() {
 }
 
 function drawChart(data) {
+    // Ratio between the device's physical pixel resolution to the CSS pixel resolution
+    const dpr = window.devicePixelRatio || 1;
+    const chart = document.getElementById("chart")
+    const ctx = chart.getContext("2d")
+
+    // Increase the resolution of the chart
+    const chartWidth = chart.clientWidth * dpr;
+    const chartHeight = chart.clientHeight * dpr;
+
+    chart.width = chartWidth;
+    chart.height = chartHeight;
+    chart.style.width = chartWidth / dpr + 'px';
+    chart.style.height = chartHeight / dpr + 'px';
+
+    ctx.scale(dpr, dpr);
     // Create separate arrays to store the dates and prices for mapping and dom manipulation
     const dates = data.map(entry => entry.date);
     const prices = data.map(entry => entry.price);
 
     // Calculate the moving average based on given interval
     const movingAverages = [];
-    console.log(MOVING_AVERAGE_INTERVAL)
     for (let i = MOVING_AVERAGE_INTERVAL - 1; i < prices.length; i++) {
         const sum = prices.slice(i - MOVING_AVERAGE_INTERVAL + 1, i + 1).reduce((acc, val) => acc + val, 0);
         
@@ -60,24 +72,25 @@ function drawChart(data) {
 
     // Clear the canvas
     ctx.clearRect(0, 0, chart.width, chart.height);
+    console.log(chart.width, chart.height)
 
-    // // Draw the stock price line chart
-    // ctx.beginPath();
-    // ctx.strokeStyle = 'blue';
-    // ctx.lineWidth = 0.75;
-    // ctx.moveTo(0, chart.height - (prices[0] * chart.height / Math.max(...prices)));
-    // for (let i = 1; i < prices.length; i++) {
-    //     ctx.lineTo(i * chart.width / (prices.length - 1), chart.height - (prices[i] * chart.height / Math.max(...prices)));
-    // }
-    // ctx.stroke();
+    // Draw the stock price line chart
+    ctx.beginPath();
+    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = 0.75;
+    ctx.moveTo(0, chart.height - (prices[0] * chart.height / Math.max(...prices)) * .9);
+    for (let i = 1; i < prices.length; i++) {
+        ctx.lineTo(i * chart.width / (prices.length - 1), chart.height - (prices[i] * chart.height / Math.max(...prices)) * .9);
+    }
+    ctx.stroke();
 
     // Draw the 20-day moving average line chart
     ctx.beginPath();
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 1;
-    ctx.moveTo(0, chart.height - (movingAverages[0] * chart.height / Math.max(...prices)));
+    ctx.moveTo(0, chart.height - (movingAverages[0] * chart.height / Math.max(...prices)) * .9);
     for (let i = 1; i < movingAverages.length; i++) {
-        ctx.lineTo(i * chart.width / (movingAverages.length - 1), chart.height - (movingAverages[i] * chart.height / Math.max(...prices)));
+        ctx.lineTo(i * chart.width / (movingAverages.length - 1), chart.height - (movingAverages[i] * chart.height / Math.max(...prices)) * .9);
     }
     ctx.stroke();
 }
