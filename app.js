@@ -92,6 +92,8 @@ function drawChart(data) {
 
     const months = ['07/22', '08/22', '09/22', '10/22', '11/22', '12/22', '01/23', '02/23', '03/23', '04/23', '05/23', '06/23', '07/23', '']
 
+    const yAxisPrices = ['', '$115', '$125', '$135', '$145', '$155', '', '']
+
     // const xAxisStartingPoint = { number: 1, suffix: '' }
     // const yAxisStartingPoint = { number: 1, suffix: '' }
 
@@ -152,7 +154,7 @@ function drawChart(data) {
     ctx.translate(gridQuadrantSize, 342.6)
     // ctx.translate(gridQuadrantSize * yAxisDistanceGridLines, gridQuadrantSize * xAxisDistanceGridLines)
 
-        // Ticks marks along the positive X-axis
+    // Ticks marks along the positive X-axis
     for ( i = 0; i < linesY; i++) {
 
         ctx.beginPath();
@@ -167,7 +169,25 @@ function drawChart(data) {
         // Text value at that point
         ctx.font = '9px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(months[i], gridQuadrantSize * i -2, 15);
+        ctx.fillText(months[i], gridQuadrantSize * i - 2, 15);
+    }
+
+    // Ticks marks along the positive Y-axis
+    for ( i = 0; i < linesX; i++) {
+
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#000000";
+
+        // Draw a tick mark 6px long (-3 to 3)
+        ctx.moveTo(-3, -gridQuadrantSize * i + 0.5);
+        ctx.lineTo(3, -gridQuadrantSize * i + 0.5);
+        ctx.stroke();
+
+        // Text value at that point
+        ctx.font = '9px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(yAxisPrices[i], -16, -gridQuadrantSize * i - 2);
     }
 
     // Draw the stock price line chart
