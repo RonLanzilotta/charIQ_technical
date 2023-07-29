@@ -67,6 +67,7 @@ function drawChart(data) {
     ctx.scale(dpr, dpr);
     // Create separate arrays to store the dates and prices for mapping and dom manipulation
     const dates = data.map(entry => entry.date);
+    const months = ['07/22', '08/22', '09/22', '10/22', '11/22', '12/22', '01/23', '02/23', '03/23', '04/23', '05/23', '06/23']
     const prices = data.map(entry => entry.price);
 
     // Calculate the moving average based on given interval
@@ -98,56 +99,74 @@ function drawChart(data) {
 
     // Draw X axis grid lines
     for (let i = 0; i < linesX; i++) {
-        grid.beginPath();
-        grid.lineWidth = 1;
+        ctx.beginPath();
+        ctx.lineWidth = 1;
 
         if( i == xAxisDistanceGridLines) {
-            grid.strokeStyle = "#000000";
-            grid.lineWidth = 2;
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 2;
         } else {
-            grid.strokeStyle = "#c7c7c7";
+            ctx.strokeStyle = "#c7c7c7";
         }
     
     // Not sure what this is for yet
         if( i == linesX ) {
-            grid.moveTo(0, gridQuadrantSize * i);
-            grid.lineTo(chartWidth, gridQuadrantSize * i);
+            ctx.moveTo(0, gridQuadrantSize * i);
+            ctx.lineTo(chartWidth, gridQuadrantSize * i);
         }
         else {
-            grid.moveTo(0, gridQuadrantSize * i + 0.5);
-            grid.lineTo(chartWidth, gridQuadrantSize * i + 0.5);
+            ctx.moveTo(0, gridQuadrantSize * i + 0.5);
+            ctx.lineTo(chartWidth, gridQuadrantSize * i + 0.5);
         }
-        grid.stroke();
+        ctx.stroke();
 
     }
 
-        // Draw Y axis grid lines
-        for (let i = 0; i < linesY; i++) {
-            grid.beginPath();
-            grid.lineWidth = 1;
-    
-            if( i == yAxisDistanceGridLines) {
-                grid.strokeStyle = "#000000";
-                grid.lineWidth = 2;
-            } else {
-                grid.strokeStyle = "#c7c7c7";
-            }
-        
-        // Not sure what this is for yet
-            if( i == linesY ) {
-                grid.moveTo(gridQuadrantSize * i, 0);
-                grid.lineTo(gridQuadrantSize * i, chartHeight);
-            }
-            else {
-                grid.moveTo(gridQuadrantSize * i + 0.5, 0);
-                grid.lineTo(gridQuadrantSize * i + 0.5, chartHeight);
-            }
-            grid.stroke();
-    
+    // Draw Y axis grid lines
+    for (let i = 0; i < linesY; i++) {
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+
+        if( i == yAxisDistanceGridLines) {
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 2;
+        } else {
+            ctx.strokeStyle = "#c7c7c7";
         }
-
-
     
+    // Not sure what this is for yet
+        if( i == linesY ) {
+            ctx.moveTo(gridQuadrantSize * i, 0);
+            ctx.lineTo(gridQuadrantSize * i, chartHeight);
+        }
+        else {
+            ctx.moveTo(gridQuadrantSize * i + 0.5, 0);
+            ctx.lineTo(gridQuadrantSize * i + 0.5, chartHeight);
+        }
+        ctx.stroke();
+
+    }
+
+    // shifts the origin of the drawn content
+    ctx.translate(gridQuadrantSize, gridQuadrantSize)
+    
+
+        // Ticks marks along the positive X-axis
+    for( i = 0; i < (linesY - yAxisDistanceGridLines); i++) {
+        grid.beginPath();
+        grid.lineWidth = 1;
+        grid.strokeStyle = "#000000";
+
+        // Draw a tick mark 6px long (-3 to 3)
+        grid.moveTo(gridQuadrantSize * i + 0.5, -3);
+        grid.lineTo(gridQuadrantSize * i + 0.5, 3);
+        grid.stroke();
+
+        // Text value at that point
+        grid.font = '9px Arial';
+        grid.textAlign = 'start';
+        grid.fillText(months[i], gridQuadrantSize *i-2, 15);
+    }
 
     // Draw the stock price line chart
     ctx.beginPath();
