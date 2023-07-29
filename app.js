@@ -1,7 +1,9 @@
-// change this to be set dynamically by the user
 const API_URL = 'https://chartiq-api-8511c706644d.herokuapp.com/api/data'
 // Sets the Moving Average Interval to a default of 20, to be changed by the user based on input.
 let MOVING_AVERAGE_INTERVAL = document.getElementById("movingAvgInt").defaultValue = 20;
+
+// let MOVING_AVERAGE_INTERVAL = 20;
+
 let stockPriceData
 
 // select the chart element and its rendering context to enable drawn content
@@ -48,18 +50,19 @@ function drawChart(data) {
     const dpr = window.devicePixelRatio || 1;
     const chart = document.getElementById("lineChart")
     const ctx = chart.getContext("2d")
+    const grid = chart.getContext("2d")
 
     // Increase the resolution of the chart
     const chartWidth = chart.clientWidth * dpr;
     const chartHeight = chart.clientHeight * dpr;
 
-    chart.width = chartWidth;
-    chart.height = chartHeight;
+    chart.width = chartWidth
+    chart.height = chartHeight
     chart.style.width = chartWidth / dpr + 'px';
     chart.style.height = chartHeight / dpr + 'px';
 
-    document.querySelector(".fullChartContainer").style.width = `${chartWidth / dpr + 30}px`
-    document.querySelector(".chartXAxis").style.width = `${chartWidth / dpr + 30}px`
+    // document.querySelector(".fullChartContainer").style.width = `${chartWidth / dpr + 30}px`
+    // document.querySelector(".chartXAxis").style.width = `${chartWidth / dpr + 30}px`
     
     ctx.scale(dpr, dpr);
     // Create separate arrays to store the dates and prices for mapping and dom manipulation
@@ -74,13 +77,77 @@ function drawChart(data) {
         movingAverages.push(sum / MOVING_AVERAGE_INTERVAL);
     }
 
-
-
     // Clear the canvas
-    ctx.clearRect(0, 0, chart.width, chart.height);
+    ctx.clearRect(0, 0, chartWidth, chartHeight);
 
+    // Create variables for cleaner formulas below. Both variables help to adjust the height at which the lines are drawn in the canvas.
     const maxPrice = Math.max(...prices)
     const adjustHeight = maxPrice * .2
+
+    // grid preference variables
+    const gridQuadrantSize = 57;
+
+    const xAxisDistanceGridLines = 6;
+    const yAxisDistanceGridLines = 1;
+
+    const xAxisStartingPoint = { number: 1, suffix: '' }
+    const yAxisStartingPoint = { number: 1, suffix: '' }
+
+    const linesX = Math.floor(chartHeight / gridQuadrantSize)
+    const linesY = Math.floor(chartWidth / gridQuadrantSize)
+
+    // Draw X axis grid lines
+    for (let i = 0; i < linesX; i++) {
+        grid.beginPath();
+        grid.lineWidth = 1;
+
+        if( i == xAxisDistanceGridLines) {
+            grid.strokeStyle = "#000000";
+            grid.lineWidth = 2;
+        } else {
+            grid.strokeStyle = "#c7c7c7";
+        }
+    
+    // Not sure what this is for yet
+        if( i == linesX ) {
+            grid.moveTo(0, gridQuadrantSize * i);
+            grid.lineTo(chartWidth, gridQuadrantSize * i);
+        }
+        else {
+            grid.moveTo(0, gridQuadrantSize * i + 0.5);
+            grid.lineTo(chartWidth, gridQuadrantSize * i + 0.5);
+        }
+        grid.stroke();
+
+    }
+
+        // Draw Y axis grid lines
+        for (let i = 0; i < linesY; i++) {
+            grid.beginPath();
+            grid.lineWidth = 1;
+    
+            if( i == yAxisDistanceGridLines) {
+                grid.strokeStyle = "#000000";
+                grid.lineWidth = 2;
+            } else {
+                grid.strokeStyle = "#c7c7c7";
+            }
+        
+        // Not sure what this is for yet
+            if( i == linesY ) {
+                grid.moveTo(gridQuadrantSize * i, 0);
+                grid.lineTo(gridQuadrantSize * i, chartHeight);
+            }
+            else {
+                grid.moveTo(gridQuadrantSize * i + 0.5, 0);
+                grid.lineTo(gridQuadrantSize * i + 0.5, chartHeight);
+            }
+            grid.stroke();
+    
+        }
+
+
+    
 
     // Draw the stock price line chart
     ctx.beginPath();
