@@ -67,7 +67,6 @@ function drawChart(data) {
     ctx.scale(dpr, dpr);
     // Create separate arrays to store the dates and prices for mapping and dom manipulation
     const dates = data.map(entry => entry.date);
-    const months = ['07/22', '08/22', '09/22', '10/22', '11/22', '12/22', '01/23', '02/23', '03/23', '04/23', '05/23', '06/23']
     const prices = data.map(entry => entry.price);
 
     // Calculate the moving average based on given interval
@@ -83,16 +82,18 @@ function drawChart(data) {
 
     // Create variables for cleaner formulas below. Both variables help to adjust the height at which the lines are drawn in the canvas.
     const maxPrice = Math.max(...prices)
-    const adjustHeight = maxPrice * .2
+    const adjustHeight = maxPrice * -1.8
 
     // grid preference variables
-    const gridQuadrantSize = 57;
+    const gridQuadrantSize = 57.1;
 
     const xAxisDistanceGridLines = 6;
     const yAxisDistanceGridLines = 1;
 
-    const xAxisStartingPoint = { number: 1, suffix: '' }
-    const yAxisStartingPoint = { number: 1, suffix: '' }
+    const months = ['07/22', '08/22', '09/22', '10/22', '11/22', '12/22', '01/23', '02/23', '03/23', '04/23', '05/23', '06/23', '07/23', '']
+
+    // const xAxisStartingPoint = { number: 1, suffix: '' }
+    // const yAxisStartingPoint = { number: 1, suffix: '' }
 
     const linesX = Math.floor(chartHeight / gridQuadrantSize)
     const linesY = Math.floor(chartWidth / gridQuadrantSize)
@@ -148,24 +149,25 @@ function drawChart(data) {
     }
 
     // shifts the origin of the drawn content
-    ctx.translate(gridQuadrantSize, gridQuadrantSize)
-    
+    ctx.translate(gridQuadrantSize, 342.6)
+    // ctx.translate(gridQuadrantSize * yAxisDistanceGridLines, gridQuadrantSize * xAxisDistanceGridLines)
 
         // Ticks marks along the positive X-axis
-    for( i = 0; i < (linesY - yAxisDistanceGridLines); i++) {
-        grid.beginPath();
-        grid.lineWidth = 1;
-        grid.strokeStyle = "#000000";
+    for ( i = 0; i < linesY; i++) {
+
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#000000";
 
         // Draw a tick mark 6px long (-3 to 3)
-        grid.moveTo(gridQuadrantSize * i + 0.5, -3);
-        grid.lineTo(gridQuadrantSize * i + 0.5, 3);
-        grid.stroke();
+        ctx.moveTo(gridQuadrantSize * i + 0.5, -3);
+        ctx.lineTo(gridQuadrantSize * i + 0.5, 3);
+        ctx.stroke();
 
         // Text value at that point
-        grid.font = '9px Arial';
-        grid.textAlign = 'start';
-        grid.fillText(months[i], gridQuadrantSize *i-2, 15);
+        ctx.font = '9px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(months[i], gridQuadrantSize * i -2, 15);
     }
 
     // Draw the stock price line chart
