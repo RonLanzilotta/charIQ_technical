@@ -26,9 +26,6 @@ async function fetchStockData() {
             return { date, price: parseFloat(values['Close'])};
         })
         stockPriceData = stockPrices
-        console.log(stockPriceData)
-
-        console.log(stockPriceData.length)
 
         drawChart(stockPrices)
 
@@ -58,16 +55,41 @@ function drawChart(data) {
 
     chart.width = chartWidth
     chart.height = chartHeight
-    chart.style.width = chartWidth / dpr + 'px';
-    chart.style.height = chartHeight / dpr + 'px';
-
-    // document.querySelector(".fullChartContainer").style.width = `${chartWidth / dpr + 30}px`
-    // document.querySelector(".chartXAxis").style.width = `${chartWidth / dpr + 30}px`
+    chart.style.width = `${chartWidth / dpr}px`;
+    chart.style.height = `${chartHeight / dpr}px`;
     
     ctx.scale(dpr, dpr);
     // Create separate arrays to store the dates and prices for mapping and dom manipulation
     const dates = data.map(entry => entry.date);
     const prices = data.map(entry => entry.price);
+
+    // Makes the prices along the Y-axis dynamic according to the stock prices in our data.
+    let yAxisUpperBound = 0;
+    let yAxisLowerBound = Infinity;
+    let yAxisArr = [];
+
+    console.log(prices)
+
+    for (let i = 0; i < prices.length; i++) {
+        if (prices[i] > yAxisUpperBound) {
+            yAxisUpperBound = Math.round(prices[i] / 10) * 10
+        }
+        if (prices[i] < yAxisLowerBound && prices[i] > 0) {
+            yAxisLowerBound = Math.round(prices[i] / 10) * 10
+        }
+    }
+
+    let yAxisInterval = Math.round((yAxisUpperBound - yAxisLowerBound) / 4)
+
+    console.log(yAxisUpperBound, yAxisLowerBound)
+
+    for (let i = 0; i < 5; i++) {
+        yAxisArr.push(yAxisLowerBound + (i * yAxisInterval))
+    }
+
+    // yAxisArr.push(yAxisUpperBound + yAxisInterval)
+    yAxisArr.unshift(0)
+    console.log(yAxisArr)
 
     // Calculate the moving average based on given interval
     const movingAverages = [];
@@ -187,7 +209,7 @@ function drawChart(data) {
         // Text value at that point
         ctx.font = '9px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(yAxisPrices[i], -16, -gridQuadrantSize * i - 2);
+        ctx.fillText(`$${yAxisArr[i]}`, -16, -gridQuadrantSize * i - 2);
     }
 
     // Draw the stock price line chart
@@ -213,6 +235,5 @@ function drawChart(data) {
 
 // Creates an event listener on a click of the HTML button for changing the moving avg interval.
 document.getElementById("changeMovingAvgInt").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
-
 
 fetchStockData()
