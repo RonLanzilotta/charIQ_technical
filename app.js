@@ -221,6 +221,6 @@ function drawChart(data) {
 }
 
 // Creates an event listener on a click of the HTML button for changing the moving avg interval.
-document.getElementById("changeMovingAvgInt").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
+document.getElementById("submitButton").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
 
 fetchStockData()
