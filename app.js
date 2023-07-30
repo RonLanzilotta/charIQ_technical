@@ -125,7 +125,6 @@ function drawChart(data) {
             ctx.strokeStyle = "#c7c7c7";
         }
 
-        // Not sure what this is for yet
         if (i == linesX) {
             ctx.moveTo(0, gridQuadrantSize * i);
             ctx.lineTo(chartWidth, gridQuadrantSize * i);
