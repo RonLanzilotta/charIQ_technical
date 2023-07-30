@@ -30,7 +30,8 @@ async function fetchStockData() {
 }
 
 function handleMovingAvgIntUpdate(stockPriceData) {
-    const inputString = document.getElementById('changeMovingAvgInt');
+    const inputString = document.getElementById('movAvgIntInput')
+    console.log(inputString)
     const inputNum = parseInt(inputString.value);
 
     movingAverageInterval = inputNum;
