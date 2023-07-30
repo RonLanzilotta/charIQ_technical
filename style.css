@@ -10,12 +10,19 @@ body {
     background-image: linear-gradient(to top, rgb(255, 255, 255), rgb(194, 194, 194))
 }
 
-h1 {
+.title {
     font-family: 'IBM Plex Sans', sans-serif;
+    text-align: left;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: -20px;
+}
+
+h1 {
+    font-size: 26px;
 }
 
 .stockContainer {
-    /* border: 2px solid red; */
     height: 100vh;
     width: 100%;
     display: flex;

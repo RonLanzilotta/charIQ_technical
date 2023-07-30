@@ -67,8 +67,6 @@ function drawChart(data) {
     let yAxisLowerBound = Infinity;
     let yAxisArr = [];
 
-    console.log(prices);
-
     for (let i = 0; i < prices.length; i++) {
         if (prices[i] > yAxisUpperBound) {
             yAxisUpperBound = Math.round(prices[i] / 10) * 10
@@ -79,8 +77,6 @@ function drawChart(data) {
     }
 
     let yAxisInterval = Math.round((yAxisUpperBound - yAxisLowerBound) / 4)
-
-    console.log(yAxisUpperBound, yAxisLowerBound)
 
     for (let i = 0; i < 5; i++) {
         yAxisArr.push(yAxisLowerBound + (i * yAxisInterval))
@@ -150,7 +146,6 @@ function drawChart(data) {
             ctx.strokeStyle = "#c7c7c7";
         }
 
-        // Not sure what this is for yet
         if (i == linesY) {
             ctx.moveTo(gridQuadrantSize * i, 0);
             ctx.lineTo(gridQuadrantSize * i, chartHeight);
@@ -165,7 +160,6 @@ function drawChart(data) {
 
     // shifts the origin of the drawn content
     ctx.translate(gridQuadrantSize, 342.6)
-    // ctx.translate(gridQuadrantSize * yAxisDistanceGridLines, gridQuadrantSize * xAxisDistanceGridLines)
 
     // Ticks marks along the positive X-axis
     for (i = 0; i < linesY; i++) {
