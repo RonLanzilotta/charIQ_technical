@@ -14,23 +14,28 @@
           <canvas id="lineChart" class="lineChart">current IBM 20 day moving average stock price</canvas>
           <div class="chartParameterContainer">
             <div class="inputContainer">
-              <input 
-              type="number" 
-              id="movAvgIntInput"
-              min="1"
-              max="100"
-              >
-              <button id="changeMovingAvgInt">Change Moving Average Interval</button>
+              <div class="inputDescription">Change moving average interval:</div>
+              <div class="inputAndButtonContainer">
+                <input 
+                type="number" 
+                id="movAvgIntInput"
+                min="1"
+                max="100"
+                >
+                <button id="changeMovingAvgInt">Submit</button>
+              </div>
             </div>
-            <div class="legend">
-                <div class="legendEntryContainer">
-                  <div class="stockBox"></div>
-                  <div class="stockColor">= Closing Price</div>
-                </div>
-                <div class="legendEntryContainer">
-                  <div class="movAvgBox"></div>
-                  <div class="movAvgColor">= Moving Average</div>
-                </div>
+            <div class="legendContainer">
+              <div class="legend">
+                  <div class="legendEntryContainer">
+                    <div class="stockBox"></div>
+                    <div class="stockColor">= Closing Price</div>
+                  </div>
+                  <div class="legendEntryContainer">
+                    <div class="movAvgBox"></div>
+                    <div class="movAvgColor">= Moving Average</div>
+                  </div>
+              </div>
             </div>
 
         </div>
