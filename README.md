@@ -10,6 +10,8 @@ While in development, this app uses static data from an API that I set up based 
 <br>
 
 ![app home page](./assets/appHomePage.png)
+## Launching the Project
+Fork and clone this public repository and open it in an IDE of your choice. Launch a server on your local device to view the landing page displayed in the image above.
 
 ## Technical Notes
 
