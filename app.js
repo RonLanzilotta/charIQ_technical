@@ -122,16 +122,18 @@ function drawChart(data) {
     // Clear the canvas
     ctx.clearRect(0, 0, chartWidth, chartHeight);
 
-    // Create variables for cleaner formulas below. Both variables help to adjust the height at which the lines are drawn in the canvas.
+    // Create breakout variables for cleaner formulas below. Both variables aid in height adjustment for the chart being drawn. -1.55 should likely be linked to the dpr var up above to be more dynamic.
     const maxPrice = Math.max(...prices);
     const adjustHeight = maxPrice * -1.55;
 
     // grid preference variables
     const gridQuadrantSize = 57.1;
 
+    // determines the distance from the default chart origin that the X and Y axes are drawn
     const xAxisDistanceGridLines = 6;
     const yAxisDistanceGridLines = 1;
 
+    
     const linesX = Math.floor(chartHeight / gridQuadrantSize);
     const linesY = Math.floor(chartWidth / gridQuadrantSize);
 
