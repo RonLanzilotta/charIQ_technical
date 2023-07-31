@@ -13,18 +13,17 @@ While in development, this app uses static data from an API that I set up based 
 
 ## Technical Notes
 
-This project's frontend was built using vanilla JS, CSS, and relied heavily on HTML5 Canvas elements. The backend was built using JS, node.js, express.js, and deployed using Heroku. 
+This project's frontend was built using **vanilla JavaScript, CSS,** and relied heavily on **HTML5 Canvas** elements. The backend was built using **JavaScript, node.js, express.js, and deployed using Heroku.**
 
-First, the daily IBM stock data was pulled from the Yahoo Finance link above and downloaded as a .csv file, converted to JSON, and then injected as static data into the API. Below is a snippet of the fetchStockData() function which maps through the raw data and returns an array of objects that have date and price keys with corresponding values.
+First, the daily IBM stock data was downloaded from Yahoo Finance as a .csv file, converted to JSON, and then injected as static data into the API. Below is a snippet of the **fetchStockData()** function which maps through the raw data and returns an array of objects that have date and price keys with corresponding values.
 
 ```
 const stockPrices = Object.entries(stockData).map(([date, values]) => {
     return { date, price: parseFloat(values['Close']) };
 })
 ```
-
-The pieces of the drawChart() function are as follows: <br>
-- Optimize pixel resolution and initialize chart width and height.
+Next, we'll look at the **drawChart()** function which is where most of the action happens. I've broken it down into its five main parts below: <br>
+- Optimize canvas pixel resolution and initialize chart dimensions.
 ```
 const dpr = window.devicePixelRatio || 1;
 const chart = document.getElementById("lineChart");
@@ -40,7 +39,7 @@ chart.style.height = `${chartHeight / dpr}px`;
 
 ctx.scale(dpr, dpr);
 ```
-- Create dynamic labels for Y axis.
+- Create dynamic labels for Y-axis.
 ```
 let yAxisUpperBound = 0;
     let yAxisLowerBound = Infinity;
@@ -61,7 +60,7 @@ for (let i = 0; i < 5; i++) {
     yAxisLabelArr.push(yAxisLowerBound + (i * yAxisInterval));
 }
 ```
-- Calculate moving average interval algorithm.
+- Calculate moving average interval.
 ```
 const movingAverages = [];
 
@@ -80,6 +79,7 @@ for (i = 0; i < linesX; i++) {
     ctx.moveTo(-4, -gridQuadrantSize * i + 0.5);
     ctx.lineTo(4, -gridQuadrantSize * i + 0.5);
     ctx.stroke();
+
     ctx.font = '9px Arial';
     ctx.textAlign = 'center';
     yAxisLabelArr[i] === '' ? 
@@ -93,19 +93,21 @@ for (i = 0; i < linesX; i++) {
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 1;
     ctx.moveTo(0, chartHeight + adjustHeight - (movingAverages[0] * chartHeight / maxPrice));
+
     for (let i = 1; i < movingAverages.length; i++) {
         ctx.lineTo(i * chartWidth / (movingAverages.length - 1), chartHeight + adjustHeight - (movingAverages[i] * chartHeight / maxPrice));
     }
     ctx.stroke();
 ```
 ## Future Features
-Given the short timeframe of this project, there is much that could be improved upon. Large chunks of the code should be modularized into smaller functions which are called within the drawChart function. Below are some future features that I plan to build out in the coming weeks:
+Given the short timeframe for this project, there is much that could be improved upon. Large chunks of the code should be modularized into smaller functions which are called within the **drawChart()** function. Below are some future features that I plan to build out in the coming weeks:
 
-- Dynamic and accurate renderings of the graph lines and their relation to the Y-axis tick marks.
+- Dynamic and more accurate renderings of the graph lines and their relation to the X- and Y-axis tick marks.
 - A more responsive design.
-- Break out the portion of drawChart() which draws the moving average so that the entire graph doesn't need to re-render on user input.
+- Avoid re-rendering the entire graph on user input. Break out the portion of drawChart() which handles drawing the moving average graph line.
 - Use more dynamic parameters in the algorithm that generates Y-axis labels.
-- Dynamic X-axis date labels.
-- Toggle between different stock statistics.
+- Create dynamic X-axis date labels.
+- Offer a toggle between different stock statistic options based on OHLC data.
+- Hover over graph line and reveal a sliding thumbnail which displays the stock price.
 - Light and dark mode themes.
-- Hover over stock line and reveal a sliding thumbnail which displays the stock price.
+
