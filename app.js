@@ -1,27 +1,35 @@
+// Link to the API. This is where we receive data
 const API_URL = 'https://chartiq-api-8511c706644d.herokuapp.com/api/data';
 
-// Sets the Moving Average Interval to a default of 20, to be changed by the user based on input.
+// Defaults the moving average interval to 20 days, to be changed by user input.
 let movingAverageInterval = document.getElementById("movAvgIntInput").defaultValue = 20;
 
+// This will store our cleaned data outside of the API call function
 let stockPriceData;
 
 // API call
 async function fetchStockData() {
     try {
+
         // fetches API data dynamically and returns a Promise.
         const response = await fetch(API_URL);
 
         // converts to JSON after the Promise is resolved.
         const data = await response.json();
+
         // isolates the OHLCC data from the JSON with the 'Time Series (Daily)' key.
         const stockData = data[1]['Time Series (Daily)'];
+
         // Object.entries() returns an array of arrays which contain two elements each, derived from the data object's key value pairs.
-        // Here, .map() returns an array of objects with the date and the stock's closing price can be found by accessing 'Close' from the data object.
+        // Here, .map([date, values]) returns an array of objects with the date and value assigned to the following format: { 'date': XX/XX/XXXX, 'price': XXX.XXXXXX}
         const stockPrices = Object.entries(stockData).map(([date, values]) => {
             return { date, price: parseFloat(values['Close']) };
         })
+
+        // This variable assignment allows our data to be accessed from outside of this function
         stockPriceData = stockPrices;
 
+        // Passes our cleaned data in a call to the drawChart function
         drawChart(stockPrices);
 
     } catch (error) {
@@ -29,65 +37,82 @@ async function fetchStockData() {
     }
 }
 
+// handles user input and the reassignment of the movingAverageInterval variable
 function handleMovingAvgIntUpdate(stockPriceData) {
-    const inputString = document.getElementById('movAvgIntInput')
-    console.log(inputString)
+
+    // selects the HTML element that takes user input
+    const inputString = document.getElementById('movAvgIntInput');
+
+    // converts input from a string to a number
     const inputNum = parseInt(inputString.value);
 
+    // assigns converted input to the movingAverageInterval variable
     movingAverageInterval = inputNum;
+
+    // redraws the chart with the new 
     drawChart(stockPriceData);
 }
 
 function drawChart(data) {
+
     // Ratio between the device's physical pixel resolution to the CSS pixel resolution
     const dpr = window.devicePixelRatio || 1;
+    
+    // selects the HTML Canvas element
     const chart = document.getElementById("lineChart");
+
+    // establishes a context to render 2D drawings
     const ctx = chart.getContext("2d");
 
-    // Increase the resolution of the chart
+    // Increase the resolution of the chart. clientWidth/Height gets the inner pixel dimensions of the canvas element
     const chartWidth = chart.clientWidth * dpr;
     const chartHeight = chart.clientHeight * dpr;
-
     chart.width = chartWidth;
     chart.height = chartHeight;
     
+    // Sets a backup height at width based on the dpr, which helps with the responsive design.
     chart.style.width = `${chartWidth / dpr}px`;
     chart.style.height = `${chartHeight / dpr}px`;
 
+    // Scales the context's pixel ratio based on the dpr. For example, if the dpr is 2, then each pixel in a drawing will be scaled to take up 2 pixels.
     ctx.scale(dpr, dpr);
-    // Create separate arrays to store the dates and prices for mapping and dom manipulation
-    // const dates = data.map(entry => entry.date);
+    
+    // Creates a separate array of closing price data.
     const prices = data.map(entry => entry.price);
 
-    // hard coded dates for x-axis labels
+    // An array of dates for our X-axis labels
     const months = ['', '08/22', '09/22', '10/22', '11/22', '12/22', '01/23', '02/23', '03/23', '04/23', '05/23', '06/23', '07/23', ''];
 
-    // Makes the prices along the Y-axis dynamic according to the stock prices in our data.
+    // These variables are used to create dynamic Y-axis labels, based on our data's stock prices.
     let yAxisUpperBound = 0;
     let yAxisLowerBound = Infinity;
-    let yAxisArr = [];
+    let yAxisLabelArr = [];
 
+    // Loop through the prices and finds and assigns the upper and lower bounds. Rounds to a whole number
     for (let i = 0; i < prices.length; i++) {
         if (prices[i] > yAxisUpperBound) {
-            yAxisUpperBound = Math.round(prices[i] / 10) * 10
+            yAxisUpperBound = Math.round(prices[i] / 10) * 10;
         }
         if (prices[i] < yAxisLowerBound && prices[i] > 0) {
-            yAxisLowerBound = Math.round(prices[i] / 10) * 10
+            yAxisLowerBound = Math.round(prices[i] / 10) * 10;
         }
     }
 
-    let yAxisInterval = Math.round((yAxisUpperBound - yAxisLowerBound) / 4)
+    // Determines the interval between Y-axis labels. Could be refactored to be more dynamic.
+    let yAxisInterval = Math.round((yAxisUpperBound - yAxisLowerBound) / 4);
 
+    // Generates and pushes Y-axis labels to the yAxisLabelArr. The loop's condition statement could be refactored to be more dynamic.
     for (let i = 0; i < 5; i++) {
-        yAxisArr.push(yAxisLowerBound + (i * yAxisInterval))
+        yAxisLabelArr.push(yAxisLowerBound + (i * yAxisInterval));
     }
 
-    // yAxisArr.push(yAxisUpperBound + yAxisInterval)
-    yAxisArr.unshift('')
-    console.log(yAxisArr)
+    // Adds a blank space to the first position in array for formatting.
+    yAxisLabelArr.unshift('');
 
-    // Calculate the moving average based on given interval
+    // Calculates the moving average based on movingAverageInterval variable
     const movingAverages = [];
+
+    // Loops through the prices arr and creates subarrays based on the moving average interval. These subarrays are summed, divided by the MAI, and then pushed to a new array of MAI's.
     for (let i = movingAverageInterval - 1; i < prices.length; i++) {
         const sum = prices.slice(i - movingAverageInterval + 1, i + 1).reduce((acc, val) => acc + val, 0);
 
@@ -98,7 +123,7 @@ function drawChart(data) {
     ctx.clearRect(0, 0, chartWidth, chartHeight);
 
     // Create variables for cleaner formulas below. Both variables help to adjust the height at which the lines are drawn in the canvas.
-    const maxPrice = Math.max(...prices)
+    const maxPrice = Math.max(...prices);
     const adjustHeight = maxPrice * -1.55;
 
     // grid preference variables
@@ -107,8 +132,8 @@ function drawChart(data) {
     const xAxisDistanceGridLines = 6;
     const yAxisDistanceGridLines = 1;
 
-    const linesX = Math.floor(chartHeight / gridQuadrantSize)
-    const linesY = Math.floor(chartWidth / gridQuadrantSize)
+    const linesX = Math.floor(chartHeight / gridQuadrantSize);
+    const linesY = Math.floor(chartWidth / gridQuadrantSize);
 
     // Draw X axis grid lines
     for (let i = 0; i < linesX; i++) {
@@ -159,7 +184,7 @@ function drawChart(data) {
     }
 
     // shifts the origin of the drawn content
-    ctx.translate(gridQuadrantSize, 342.6)
+    ctx.translate(gridQuadrantSize, 342.6);
 
     // Ticks marks along the positive X-axis
     for (i = 0; i < linesY; i++) {
@@ -194,9 +219,9 @@ function drawChart(data) {
         // Text value at that point
         ctx.font = '9px Arial';
         ctx.textAlign = 'center';
-        yAxisArr[i] === '' ? 
-            ctx.fillText(yAxisArr[i], -16, -gridQuadrantSize * i - 2) :
-            ctx.fillText(`$${yAxisArr[i]}`, -16, -gridQuadrantSize * i - 2);
+        yAxisLabelArr[i] === '' ? 
+            ctx.fillText(yAxisLabelArr[i], -16, -gridQuadrantSize * i - 2) :
+            ctx.fillText(`$${yAxisLabelArr[i]}`, -16, -gridQuadrantSize * i - 2);
     }
 
     // Draw the stock price line chart
@@ -221,6 +246,6 @@ function drawChart(data) {
 }
 
 // Creates an event listener on a click of the HTML button for changing the moving avg interval.
-document.getElementById("submitButton").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData))
+document.getElementById("submitButton").addEventListener("click", () => handleMovingAvgIntUpdate(stockPriceData));
 
-fetchStockData()
+fetchStockData();
